@@ -114,3 +114,31 @@ def test_repo_tool_with_directory_action():
 
         # Verify the directory was deleted
         assert not os.path.exists(dir_path)
+
+
+def test_repo_tool_remove_non_empty_directory():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # Setup: Initialize git repo and create a non-empty directory
+        RepoTool.run_command("git init", tmpdir)
+        dir_name = "non_empty_dir"
+        dir_path = os.path.join(tmpdir, dir_name)
+        os.makedirs(dir_path, exist_ok=True)
+
+        # Create a file inside the directory
+        file_name = "temp_file.txt"
+        file_path = os.path.join(dir_path, file_name)
+        with open(file_path, "w") as file:
+            file.write("Temporary content")
+
+        # Prepare and apply the directory delete action
+        dir_action_delete = DirectoryAction(
+            action=Action.DELETE, directory_name=dir_name
+        )
+        repo_tool_input_delete = RepoToolInput(
+            changes=[RepoChange(directory_action=dir_action_delete)]
+        )
+        repo_tool = RepoTool(tmpdir)
+        repo_tool.implement_changes(repo_tool_input_delete)
+
+        # Verify the directory was deleted
+        assert not os.path.exists(dir_path)

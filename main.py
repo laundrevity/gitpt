@@ -1,7 +1,6 @@
 from models import RepoToolInput, Requirement
 from repo_tool import RepoTool
 from rich import print
-import subprocess
 import requests
 import json
 import os

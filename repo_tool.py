@@ -3,6 +3,7 @@ from models import RepoToolInput, Requirement, Action
 
 from typing import Dict
 import subprocess
+import shutil
 import os
 
 
@@ -58,26 +59,8 @@ class RepoTool:
                         )
 
                     case Action.DELETE:
-                        os.rmdir(directory_path)
-                        RepoTool.run_command(
-                            f"git rm -r {change.directory_action.directory_name}",
-                            self.repo_dir,
-                        )
-
-    # def requirement_is_fulfilled(self, data: Requirement):
-    #     for command in data.verification_commands:
-    #         success, output = RepoTool.run_command(command, cwd=self.repo_dir)
-    #         print(f"{command=} -> {success=}, {output=}")
-    #         if not success:
-    #             return False, output
-
-    #     if not output == data.expected_output:
-    #         return (
-    #             False,
-    #             f"Got unexpected output: {output}, expecting {data.expected_output}",
-    #         )
-
-    #     return True, "Requirement fulfilled"
+                        if os.path.exists(directory_path):
+                            shutil.rmtree(directory_path)
 
     def requirement_is_fulfilled(self, data: Requirement):
         current_dir = self.repo_dir  # Starting in the repo directory
